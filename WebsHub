@@ -1,26 +1,26 @@
 -- ============================================
--- WEBSHUB LAUNCHER by Webs_My
--- Копирует ссылки на скрипты в буфер обмена
+-- WEBSHUB LAUNCHER (Rayfield Edition) by Webs_My
 -- ============================================
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Players = game:GetService("Players")
 
 local Window = Rayfield:CreateWindow({
-    Name = "WebsHub",
+    Name = "WebsHub Launcher",
     LoadingTitle = "Загрузка...",
     LoadingSubtitle = "by Webs_My",
     ConfigurationSaving = { Enabled = false }
 })
 
 local MainTab = Window:CreateTab("Скрипты", 4483362458)
+local InfoTab = Window:CreateTab("Инфо", 4483362458)
 
--- Функция для копирования в буфер
+-- Функция для копирования
 local function copyToClipboard(text, scriptName)
     if setclipboard then
         setclipboard(text)
         Rayfield:Notify({ 
-            Title = "Скопировано!", 
+            Title = "✅ Скопировано!", 
             Content = scriptName .. " — ссылка в буфере. Вставь в Delta!", 
             Duration = 4 
         })
@@ -34,16 +34,13 @@ local function copyToClipboard(text, scriptName)
 end
 
 -- ============================================
--- ССЫЛКИ НА СКРИПТЫ
+-- ССЫЛКИ НА СКРИПТЫ (ЗАМЕНИ, КОГДА ЗАГРУЗИШЬ ИХ)
 -- ============================================
--- ВАЖНО: Замени эти ссылки на свои реальные!
--- Пока я ставлю заглушки, чтобы ты понял структуру.
-
 local LINKS = {
-    Universal = "https://raw.githubusercontent.com/ТВОЙ_НИК/ТВОЙ_РЕПОЗИТОРИЙ/main/Universal.lua",
-    Chaos = "https://raw.githubusercontent.com/ТВОЙ_НИК/ТВОЙ_РЕПОЗИТОРИЙ/main/Chaos.lua",
-    Drone = "https://raw.githubusercontent.com/Wersmine/FPV-Drone-Game-/refs/heads/main/Script?v=3", -- Твоя рабочая ссылка
-    Flight = "https://raw.githubusercontent.com/ТВОЙ_НИК/ТВОЙ_РЕПОЗИТОРИЙ/main/Flight.lua"
+    Universal = "ССЫЛКА_НА_УНИВЕРСАЛ",
+    Chaos = "ССЫЛКА_НА_ХАОС",
+    Drone = "https://raw.githubusercontent.com/Wersmine/FPV-Drone-Game-/refs/heads/main/Script?v=3",
+    Flight = "ССЫЛКА_НА_A_LONG_FLIGHT"
 }
 
 -- ============================================
@@ -53,39 +50,31 @@ MainTab:CreateSection("Нажми, чтобы скопировать ссылк�
 
 MainTab:CreateButton({
     Name = "🚀 Универсал (Multi-Cheat v4)",
-    Callback = function()
-        copyToClipboard(LINKS.Universal, "Универсал")
-    end
+    Callback = function() copyToClipboard(LINKS.Universal, "Универсал") end
 })
 
 MainTab:CreateButton({
     Name = "💥 Хаос (Chaos Script)",
-    Callback = function()
-        copyToClipboard(LINKS.Chaos, "Хаос")
-    end
+    Callback = function() copyToClipboard(LINKS.Chaos, "Хаос") end
 })
 
 MainTab:CreateButton({
     Name = "🚁 Дрон (FPV AutoFarm)",
-    Callback = function()
-        copyToClipboard(LINKS.Drone, "Дрон")
-    end
+    Callback = function() copyToClipboard(LINKS.Drone, "Дрон") end
 })
 
 MainTab:CreateButton({
     Name = "✈️ A Long Flight (v6)",
-    Callback = function()
-        copyToClipboard(LINKS.Flight, "A Long Flight")
-    end
+    Callback = function() copyToClipboard(LINKS.Flight, "A Long Flight") end
 })
 
 -- ============================================
 -- ИНСТРУКЦИЯ
 -- ============================================
-MainTab:CreateSection("Инструкция")
-MainTab:CreateParagraph({
-    Title = "Как использовать?",
-    Content = "1. Нажми на кнопку скрипта.\n2. Перейди в Delta.\n3. Нажми в поле ввода (где вставляешь скрипты).\n4. Вставь ссылку (она уже в буфере).\n5. Нажми Execute."
+InfoTab:CreateSection("Как использовать?")
+InfoTab:CreateParagraph({
+    Title = "Инструкция:",
+    Content = "1. Нажми на кнопку нужного скрипта.\n2. Ссылка скопируется в буфер.\n3. Перейди в Delta (или другой исполнитель).\n4. Вставь ссылку в поле ввода.\n5. Нажми Execute."
 })
 
 Rayfield:Notify({
