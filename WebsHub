@@ -1,84 +1,1043 @@
 -- ============================================
--- WEBSHUB LAUNCHER (Rayfield Edition) by Webs_My
+-- WEBSHUB ALL-IN-ONE (by Webs_My)
+-- Часть 1: Основа и Меню
 -- ============================================
 
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local Stats = game:GetService("Stats")
+local VirtualUser = game:GetService("VirtualUser")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local LocalPlayer = Players.LocalPlayer
 
-local Window = Rayfield:CreateWindow({
+-- Главное окно Хаба
+local HubWindow = Rayfield:CreateWindow({
     Name = "WebsHub Launcher",
-    LoadingTitle = "Загрузка...",
+    LoadingTitle = "Загрузка Хаба...",
     LoadingSubtitle = "by Webs_My",
     ConfigurationSaving = { Enabled = false }
 })
 
-local MainTab = Window:CreateTab("Скрипты", 4483362458)
-local InfoTab = Window:CreateTab("Инфо", 4483362458)
+local HubTab = HubWindow:CreateTab("Выбор скрипта", 4483362458)
 
--- Функция для копирования
-local function copyToClipboard(text, scriptName)
-    if setclipboard then
-        setclipboard(text)
-        Rayfield:Notify({ 
-            Title = "✅ Скопировано!", 
-            Content = scriptName .. " — ссылка в буфере. Вставь в Delta!", 
-            Duration = 4 
-        })
-    else
-        Rayfield:Notify({ 
-            Title = "Ошибка", 
-            Content = "Твой исполнитель не поддерживает копирование", 
-            Duration = 3 
-        })
-    end
+-- Переменные для хранения окон скриптов (чтобы закрывать их при переключении)
+local UniversalWindow = nil
+local DroneWindow = nil
+local ChaosWindow = nil
+local FlightWindow = nil
+
+local function closeAllWindows()
+    if UniversalWindow then UniversalWindow:Destroy() end
+    if DroneWindow then DroneWindow:Destroy() end
+    if ChaosWindow then ChaosWindow:Destroy() end
+    if FlightWindow then FlightWindow:Destroy() end
+    UniversalWindow = nil
+    DroneWindow = nil
+    ChaosWindow = nil
+    FlightWindow = nil
 end
 
--- ============================================
--- ССЫЛКИ НА СКРИПТЫ (ЗАМЕНИ, КОГДА ЗАГРУЗИШЬ ИХ)
--- ============================================
-local LINKS = {
-    Universal = "ССЫЛКА_НА_УНИВЕРСАЛ",
-    Chaos = "ССЫЛКА_НА_ХАОС",
-    Drone = "https://raw.githubusercontent.com/Wersmine/FPV-Drone-Game-/refs/heads/main/Script?v=3",
-    Flight = "ССЫЛКА_НА_A_LONG_FLIGHT"
-}
+HubTab:CreateSection("Запуск скриптов")
 
--- ============================================
--- КНОПКИ
--- ============================================
-MainTab:CreateSection("Нажми, чтобы скопировать ссылку")
-
-MainTab:CreateButton({
-    Name = "🚀 Универсал (Multi-Cheat v4)",
-    Callback = function() copyToClipboard(LINKS.Universal, "Универсал") end
+HubTab:CreateButton({
+    Name = "🚀 Открыть Универсал",
+    Callback = function()
+        closeAllWindows()
+        -- Вызов функции запуска Универсала (она будет в Части 2)
+        if _G.StartUniversal then _G.StartUniversal() else 
+            Rayfield:Notify({Title="Ошибка", Content="Код Универсала не загружен", Duration=3}) 
+        end
+    end
 })
 
-MainTab:CreateButton({
-    Name = "💥 Хаос (Chaos Script)",
-    Callback = function() copyToClipboard(LINKS.Chaos, "Хаос") end
+HubTab:CreateButton({
+    Name = "🚁 Открыть Дрон",
+    Callback = function()
+        closeAllWindows()
+        -- Вызов функции запуска Дрона (она будет в Части 3)
+        if _G.StartDrone then _G.StartDrone() else 
+            Rayfield:Notify({Title="Ошибка", Content="Код Дрона не загружен", Duration=3}) 
+        end
+    end
 })
 
-MainTab:CreateButton({
-    Name = "🚁 Дрон (FPV AutoFarm)",
-    Callback = function() copyToClipboard(LINKS.Drone, "Дрон") end
+HubTab:CreateButton({
+    Name = "💥 Открыть Хаос",
+    Callback = function()
+        closeAllWindows()
+        -- Вызов функции запуска Хаоса (она будет в Части 4)
+        if _G.StartChaos then _G.StartChaos() else 
+            Rayfield:Notify({Title="Ошибка", Content="Код Хаоса не загружен", Duration=3}) 
+        end
+    end
 })
 
-MainTab:CreateButton({
-    Name = "✈️ A Long Flight (v6)",
-    Callback = function() copyToClipboard(LINKS.Flight, "A Long Flight") end
+HubTab:CreateButton({
+    Name = "✈️ Открыть A Long Flight",
+    Callback = function()
+        closeAllWindows()
+        -- Вызов функции запуска A Long Flight (она будет в Части 5)
+        if _G.StartFlight then _G.StartFlight() else 
+            Rayfield:Notify({Title="Ошибка", Content="Код A Long Flight не загружен", Duration=3}) 
+        end
+    end
 })
 
+HubTab:CreateSection("Информация")
+HubTab:CreateParagraph({
+    Title = "WebsHub All-in-One",
+    Content = "Все скрипты в одном месте. При переключении старые меню закрываются, чтобы не мешать друг другу."
+})
 -- ============================================
--- ИНСТРУКЦИЯ
+-- WEBSHUB ALL-IN-ONE
+-- Часть 2: Универсал (Multi-Cheat v4.0)
 -- ============================================
-InfoTab:CreateSection("Как использовать?")
-InfoTab:CreateParagraph({
-    Title = "Инструкция:",
-    Content = "1. Нажми на кнопку нужного скрипта.\n2. Ссылка скопируется в буфер.\n3. Перейди в Delta (или другой исполнитель).\n4. Вставь ссылку в поле ввода.\n5. Нажми Execute."
-})
 
-Rayfield:Notify({
-    Title = "WebsHub Launcher",
-    Content = "Жми на кнопку — ссылка скопируется!",
-    Duration = 5
-})
+_G.StartUniversal = function()
+    UniversalWindow = Rayfield:CreateWindow({
+        Name = "Webs_My v4 (Universal)",
+        LoadingTitle = "Загрузка Универсала...",
+        LoadingSubtitle = "by Webs_My",
+        ConfigurationSaving = { Enabled = false }
+    })
+
+    -- HUD
+    local U_ScreenGui = Instance.new("ScreenGui")
+    U_ScreenGui.Parent = game.CoreGui
+    U_ScreenGui.Name = "UniHUD"
+    U_ScreenGui.ResetOnSpawn = false
+
+    local U_HudFrame = Instance.new("Frame")
+    U_HudFrame.Size = UDim2.new(0, 260, 0, 56)
+    U_HudFrame.Position = UDim2.new(0, 10, 0, 100)
+    U_HudFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+    U_HudFrame.BackgroundTransparency = 0.25
+    U_HudFrame.BorderSizePixel = 0
+    U_HudFrame.Parent = U_ScreenGui
+    Instance.new("UICorner", U_HudFrame).CornerRadius = UDim.new(0, 8)
+
+    local U_CoordsText = Instance.new("TextLabel")
+    U_CoordsText.Size = UDim2.new(1, 0, 0.6, 0)
+    U_CoordsText.BackgroundTransparency = 1
+    U_CoordsText.TextColor3 = Color3.fromRGB(0, 255, 120)
+    U_CoordsText.Font = Enum.Font.Code
+    U_CoordsText.TextSize = 14
+    U_CoordsText.Text = "X: 0  Y: 0  Z: 0"
+    U_CoordsText.Parent = U_HudFrame
+
+    local U_FpsText = Instance.new("TextLabel")
+    U_FpsText.Size = UDim2.new(1, 0, 0.4, 0)
+    U_FpsText.Position = UDim2.new(0, 0, 0.6, 0)
+    U_FpsText.BackgroundTransparency = 1
+    U_FpsText.TextColor3 = Color3.fromRGB(255, 200, 60)
+    U_FpsText.Font = Enum.Font.Code
+    U_FpsText.TextSize = 13
+    U_FpsText.Text = "FPS: —  Ping: —"
+    U_FpsText.Parent = U_HudFrame
+
+    local u_fpsCount, u_fpsTime = 0, tick()
+    task.spawn(function()
+        while task.wait(0.1) do
+            if not U_ScreenGui.Parent then break end
+            local char = LocalPlayer.Character
+            if char and char:FindFirstChild("HumanoidRootPart") then
+                local p = char.HumanoidRootPart.Position
+                U_CoordsText.Text = "X: " .. math.floor(p.X) .. "  Y: " .. math.floor(p.Y) .. "  Z: " .. math.floor(p.Z)
+            end
+            u_fpsCount = u_fpsCount + 1
+            if tick() - u_fpsTime >= 1 then
+                local ping = "—"
+                pcall(function() ping = math.floor(Stats.Network.ServerStatsItem["Data Ping"]:GetValue()) end)
+                U_FpsText.Text = "FPS: " .. u_fpsCount .. "  Ping: " .. ping
+                u_fpsCount, u_fpsTime = 0, tick()
+            end
+        end
+    end)
+    RunService.RenderStepped:Connect(function() u_fpsCount = u_fpsCount + 1 end)
+
+    -- Вкладки
+    local MainTab = UniversalWindow:CreateTab("Main", 4483362458)
+    local MoveTab = UniversalWindow:CreateTab("Movement", 4483362458)
+    local EspTab = UniversalWindow:CreateTab("ESP", 4483362458)
+    local AimTab = UniversalWindow:CreateTab("Aimbot", 4483362458)
+    local PlrTab = UniversalWindow:CreateTab("Players", 4483362458)
+    local RageTab = UniversalWindow:CreateTab("Rage", 4483362458)
+
+    -- MAIN
+    MainTab:CreateSection("Персонаж")
+    local walkSpeed = 16
+    local jumpPower = 50
+    local spinEnabled = false
+    local spinSpeed = 360
+
+    local function applyStats(char)
+        if not char then return end
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if hum then
+            hum.WalkSpeed = walkSpeed
+            hum.UseJumpPower = true
+            hum.JumpPower = jumpPower
+        end
+    end
+
+    MainTab:CreateSlider({ Name = "Скорость", Range = {16, 1000}, Increment = 1, CurrentValue = 16,
+        Callback = function(v) walkSpeed = v; applyStats(LocalPlayer.Character) end })
+    MainTab:CreateSlider({ Name = "Прыжок", Range = {50, 5000}, Increment = 5, CurrentValue = 50,
+        Callback = function(v) jumpPower = v; applyStats(LocalPlayer.Character) end })
+    MainTab:CreateToggle({ Name = "Spin", CurrentValue = false, Callback = function(s) spinEnabled = s end })
+
+    RunService.Heartbeat:Connect(function(dt)
+        if not spinEnabled then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        hrp.CFrame = hrp.CFrame * CFrame.Angles(0, math.rad(spinSpeed) * dt, 0)
+    end)
+
+    -- MOVEMENT
+    MoveTab:CreateSection("Noclip")
+    local noclipEnabled = false
+    MoveTab:CreateToggle({ Name = "Noclip", CurrentValue = false, Callback = function(s) noclipEnabled = s end })
+    RunService.Stepped:Connect(function()
+        if not noclipEnabled then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        for _, obj in pairs(char:GetDescendants()) do
+            if obj:IsA("BasePart") then obj.CanCollide = false end
+        end
+    end)
+
+    MoveTab:CreateSection("Полёт")
+    local flyEnabled = false
+    local flySpeed = 50
+    local flyBV = nil
+    MoveTab:CreateSlider({ Name = "Скорость полёта", Range = {10, 500}, Increment = 5, CurrentValue = 50, Callback = function(v) flySpeed = v end })
+    MoveTab:CreateToggle({ Name = "Включить полёт", CurrentValue = false, Callback = function(state)
+        flyEnabled = state
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        if state then
+            flyBV = Instance.new("BodyVelocity")
+            flyBV.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+            flyBV.Parent = hrp
+        elseif flyBV then
+            flyBV:Destroy()
+            flyBV = nil
+        end
+    end })
+
+    RunService.RenderStepped:Connect(function()
+        if not flyEnabled or not flyBV then return end
+        local cam = workspace.CurrentCamera
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hum then return end
+        local move = hum.MoveDirection
+        local camLook = cam.CFrame.LookVector
+        flyBV.Velocity = camLook * move.Z * flySpeed + cam.CFrame.RightVector * move.X * flySpeed
+    end)
+
+    -- ESP
+    EspTab:CreateSection("ESP")
+    local espBox = false
+    local espObjects = {}
+    local function updateESP()
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer then
+                local char = plr.Character
+                if char then
+                    local hrp = char:FindFirstChild("HumanoidRootPart")
+                    if hrp then
+                        if espBox and not espObjects[plr] then
+                            local box = Instance.new("BoxHandleAdornment")
+                            box.Size = Vector3.new(3, 5.4, 3)
+                            box.Adornee = hrp
+                            box.AlwaysOnTop = true
+                            box.Color3 = Color3.fromRGB(255, 0, 0)
+                            box.Parent = hrp
+                            espObjects[plr] = box
+                        elseif not espBox and espObjects[plr] then
+                            espObjects[plr]:Destroy()
+                            espObjects[plr] = nil
+                        end
+                    end
+                end
+            end
+        end
+    end
+    EspTab:CreateToggle({ Name = "ESP Бокс", CurrentValue = false, Callback = function(s) espBox = s; updateESP() end })
+
+    -- AIMBOT
+    AimTab:CreateSection("Аимбот")
+    local aimEnabled = false
+    local aimSmooth = 0.3
+    AimTab:CreateToggle({ Name = "Аимбот (камера)", CurrentValue = false, Callback = function(s) aimEnabled = s end })
+    AimTab:CreateSlider({ Name = "Плавность", Range = {0.02, 1}, Increment = 0.02, CurrentValue = 0.3, Callback = function(v) aimSmooth = v end })
+
+    RunService:BindToRenderStep("AimbotCamera", Enum.RenderPriority.Camera.Value + 1, function()
+        if not aimEnabled then return end
+        local cam = workspace.CurrentCamera
+        local closest, shortest = nil, 300
+        local center = Vector2.new(cam.ViewportSize.X/2, cam.ViewportSize.Y/2)
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer and plr.Character then
+                local head = plr.Character:FindFirstChild("Head")
+                if head then
+                    local sp, on = cam:WorldToViewportPoint(head.Position)
+                    if on then
+                        local d = (Vector2.new(sp.X, sp.Y) - center).Magnitude
+                        if d < shortest then shortest = d; closest = head end
+                    end
+                end
+            end
+        end
+        if closest then
+            cam.CFrame = cam.CFrame:Lerp(CFrame.new(cam.CFrame.Position, closest.Position), aimSmooth)
+        end
+    end)
+
+    -- PLAYERS
+    PlrTab:CreateSection("Действия")
+    local selectedPlayer = nil
+    local function getNames()
+        local n = {}
+        for _, p in pairs(Players:GetPlayers()) do if p ~= LocalPlayer then table.insert(n, p.Name) end end
+        return n
+    end
+    local drop = PlrTab:CreateDropdown({ Name = "Игрок", Options = getNames(), CurrentOption = {},
+        Callback = function(opt) if #opt > 0 then selectedPlayer = Players:FindFirstChild(opt[1]) end end })
+
+    PlrTab:CreateButton({ Name = "🎣 Притянуть ко мне", Callback = function()
+        if not selectedPlayer or not selectedPlayer.Character then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local myHrp = char:FindFirstChild("HumanoidRootPart")
+        local tHrp = selectedPlayer.Character:FindFirstChild("HumanoidRootPart")
+        if myHrp and tHrp then
+            local bp = Instance.new("BodyPosition")
+            bp.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
+            bp.P = 50000; bp.D = 1000
+            bp.Position = myHrp.Position + Vector3.new(0, 0, -3)
+            bp.Parent = tHrp
+            task.delay(3, function() if bp then bp:Destroy() end end)
+        end
+    end })
+
+    PlrTab:CreateButton({ Name = "💀 Убить", Callback = function()
+        if not selectedPlayer or not selectedPlayer.Character then return end
+        local hum = selectedPlayer.Character:FindFirstChildOfClass("Humanoid")
+        if hum then pcall(function() hum.Health = 0 end) end
+    end })
+
+    -- RAGE (Невидимость)
+    RageTab:CreateSection("Защита")
+    local invisibleEnabled = false
+    local function applyInvis(state)
+        local char = LocalPlayer.Character
+        if not char then return end
+        for _, obj in pairs(char:GetDescendants()) do
+            if obj:IsA("BasePart") then obj.Transparency = state and 1 or 0 end
+        end
+    end
+    RageTab:CreateToggle({ Name = "Невидимость", CurrentValue = false, Callback = function(s) invisibleEnabled = s; applyInvis(s) end })
+    task.spawn(function()
+        while task.wait(0.1) do if invisibleEnabled then applyInvis(true) end end
+    end)
+
+    LocalPlayer.CharacterAdded:Connect(function(char) task.wait(0.5); applyStats(char) end)
+    if LocalPlayer.Character then applyStats(LocalPlayer.Character) end
+end
+-- ============================================
+-- WEBSHUB ALL-IN-ONE
+-- Часть 3: Дрон (FPV AutoFarm)
+-- ============================================
+
+_G.StartDrone = function()
+    DroneWindow = Rayfield:CreateWindow({
+        Name = "FPV AutoFarm (Drone)",
+        LoadingTitle = "Загрузка Дрона...",
+        LoadingSubtitle = "by Webs_My",
+        ConfigurationSaving = { Enabled = false }
+    })
+
+    -- Отдельная кнопка ТП (чтобы не мешала в меню)
+    local D_ScreenGui = Instance.new("ScreenGui")
+    D_ScreenGui.Name = "DroneTpBtn"
+    D_ScreenGui.Parent = game.CoreGui
+    D_ScreenGui.ResetOnSpawn = false
+
+    local BOX_POS = Vector3.new(1919, 66, -401)
+
+    local TpButton = Instance.new("TextButton")
+    TpButton.Size = UDim2.new(0, 140, 0, 50)
+    TpButton.Position = UDim2.new(0, 20, 0.4, 0)
+    TpButton.BackgroundColor3 = Color3.fromRGB(0, 150, 200)
+    TpButton.TextColor3 = Color3.new(1, 1, 1)
+    TpButton.Text = "📍 ТП К ЯЩИКУ"
+    TpButton.TextSize = 14
+    TpButton.Font = Enum.Font.GothamBold
+    TpButton.Draggable = true
+    TpButton.Parent = D_ScreenGui
+    Instance.new("UICorner", TpButton).CornerRadius = UDim.new(0, 10)
+
+    TpButton.MouseButton1Click:Connect(function()
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = CFrame.new(BOX_POS)
+            TpButton.Text = "✅ ТП!"
+            task.wait(1)
+            TpButton.Text = "📍 ТП К ЯЩИКУ"
+        end
+    end)
+
+    -- Основные настройки Дрона
+    local D_MainTab = DroneWindow:CreateTab("Автофарм", 4483362458)
+    local D_SettingsTab = DroneWindow:CreateTab("Настройки", 4483362458)
+
+    local autoFarmEnabled = false
+    local killNPCs = true
+    local killPlayers = true
+
+    local function click()
+        if mouse1click then pcall(mouse1click) end
+        pcall(function()
+            VirtualUser:CaptureController()
+            VirtualUser:ClickButton1(Vector2.new(
+                workspace.CurrentCamera.ViewportSize.X / 2,
+                workspace.CurrentCamera.ViewportSize.Y / 2
+            ))
+        end)
+    end
+
+    local function spamClick(count, delay)
+        count = count or 8
+        delay = delay or 0.15
+        for i = 1, count do
+            click()
+            task.wait(delay)
+        end
+    end
+
+    local function clickToBattle()
+        local playerGui = LocalPlayer:FindFirstChild("PlayerGui")
+        if not playerGui then return false end
+        for _, gui in pairs(playerGui:GetDescendants()) do
+            if gui:IsA("TextButton") or gui:IsA("ImageButton") then
+                local text = (gui.Text or ""):lower()
+                if text:find("battle") or text:find("в бой") 
+                   or text:find("играть") or text:find("play")
+                   or text:find("continue") then
+                    pcall(function() gui:Activate() end)
+                    local pos = gui.AbsolutePosition
+                    local size = gui.AbsoluteSize
+                    pcall(function()
+                        VirtualUser:CaptureController()
+                        VirtualUser:ClickButton1(Vector2.new(
+                            pos.X + size.X/2, pos.Y + size.Y/2
+                        ))
+                    end)
+                    return true
+                end
+            end
+        end
+        return false
+    end
+
+    local function getMyDrone()
+        return workspace:FindFirstChild(LocalPlayer.Name .. "_FPVDrone")
+    end
+
+    local function getClosestPlayer()
+        local char = LocalPlayer.Character
+        if not char then return nil end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return nil end
+        local myPos = hrp.Position
+        local closest, closestDist = nil, math.huge
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer and plr.Character then
+                local hum = plr.Character:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    local part = plr.Character:FindFirstChild("HumanoidRootPart")
+                        or plr.Character:FindFirstChild("Head")
+                    if part then
+                        local dist = (part.Position - myPos).Magnitude
+                        if dist < closestDist then
+                            closestDist = dist
+                            closest = plr.Character
+                        end
+                    end
+                end
+            end
+        end
+        return closest
+    end
+
+    local function getClosestNPC()
+        local char = LocalPlayer.Character
+        if not char then return nil end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return nil end
+        local myPos = hrp.Position
+        local closest, closestDist = nil, math.huge
+        for _, obj in pairs(workspace:GetDescendants()) do
+            if obj:IsA("Model") and obj.Name:find("EnemyNPC") then
+                local hum = obj:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 then
+                    local part = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("Head")
+                    if part then
+                        local dist = (part.Position - myPos).Magnitude
+                        if dist < closestDist then
+                            closestDist = dist
+                            closest = obj
+                        end
+                    end
+                end
+            end
+        end
+        return closest
+    end
+
+    local function getClosestTarget()
+        if killPlayers then
+            local p = getClosestPlayer()
+            if p then return p end
+        end
+        if killNPCs then
+            local n = getClosestNPC()
+            if n then return n end
+        end
+        return nil
+    end
+
+    -- Логика работы
+    RunService.Heartbeat:Connect(function()
+        if not autoFarmEnabled then return end
+        local drone = getMyDrone()
+        if not drone then return end
+        local target = getClosestTarget()
+        if not target then return end
+        local hrp = target:FindFirstChild("HumanoidRootPart")
+        if not hrp then hrp = target:FindFirstChild("Head") or target:FindFirstChildWhichIsA("BasePart") end
+        if not hrp then return end
+        local feetPos = hrp.Position - Vector3.new(0, 2, 0)
+        pcall(function() drone:PivotTo(CFrame.new(feetPos)) end)
+    end)
+
+    task.spawn(function()
+        while task.wait(5) do
+            if autoFarmEnabled then
+                local char = LocalPlayer.Character
+                if not char or (char:FindFirstChildOfClass("Humanoid") and char:FindFirstChildOfClass("Humanoid").Health <= 0) then
+                    clickToBattle()
+                else
+                    char.HumanoidRootPart.CFrame = CFrame.new(BOX_POS)
+                    task.wait(0.5)
+                    workspace.CurrentCamera.CFrame = CFrame.new(BOX_POS + Vector3.new(0, 10, 0), BOX_POS)
+                    task.wait(0.5)
+                    spamClick(8, 0.15)
+                end
+            end
+        end
+    end)
+
+    -- Интерфейс
+    D_MainTab:CreateSection("Управление")
+    D_MainTab:CreateToggle({ Name = "🤖 ПОЛНЫЙ АВТОФАРМ", CurrentValue = false,
+        Callback = function(s)
+            autoFarmEnabled = s
+            Rayfield:Notify({ Title = "Дрон", Content = s and "Автофарм включен" or "Автофарм выключен", Duration = 3 })
+        end 
+    })
+
+    D_SettingsTab:CreateSection("Цели")
+    D_SettingsTab:CreateToggle({ Name = "👤 Игроки", CurrentValue = true, Callback = function(s) killPlayers = s end })
+    D_SettingsTab:CreateToggle({ Name = "🎯 NPC", CurrentValue = true, Callback = function(s) killNPCs = s end })
+
+    D_MainTab:CreateSection("Ручное")
+    D_MainTab:CreateButton({ Name = "🖱️ Тест клика", Callback = function() spamClick(5, 0.2) end })
+    D_MainTab:CreateButton({ Name = "🎮 'To battle!'", Callback = function() clickToBattle() end })
+
+    D_SettingsTab:CreateSection("Кнопка на экране")
+    D_SettingsTab:CreateToggle({ Name = "👁️ Показать кнопку ТП", CurrentValue = true, Callback = function(s) TpButton.Visible = s end })
+end
+-- ============================================
+-- WEBSHUB ALL-IN-ONE
+-- Часть 4: Хаос (Chaos Script v2)
+-- ============================================
+
+_G.StartChaos = function()
+    ChaosWindow = Rayfield:CreateWindow({
+        Name = "Chaos Script",
+        LoadingTitle = "Загрузка Хаоса...",
+        LoadingSubtitle = "by Webs_My",
+        ConfigurationSaving = { Enabled = false }
+    })
+
+    local C_MainTab = ChaosWindow:CreateTab("Хаос", 4483362458)
+
+    -- Состояние
+    local flyEnabled = false
+    local flySpeed = 200
+    local flyBV = nil
+    local currentVel = Vector3.new(0, 0, 0)
+    
+    local espBoxEnabled = false
+    local espTracerEnabled = false
+    local espObjects = {}
+    local tracerLines = {}
+    
+    local LAUNCH_HEIGHT = 1000000000000 -- 1 триллион
+
+    -- ПОЛЁТ
+    local function cleanupFly()
+        if flyBV then flyBV:Destroy() flyBV = nil end
+        local char = LocalPlayer.Character
+        if char then
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if hrp then
+                local bv = hrp:FindFirstChild("FlyBV")
+                if bv then bv:Destroy() end
+            end
+        end
+        currentVel = Vector3.new(0, 0, 0)
+    end
+
+    local function startFly()
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        currentVel = Vector3.new(0, 0, 0)
+        flyBV = Instance.new("BodyVelocity")
+        flyBV.Name = "FlyBV"
+        flyBV.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+        flyBV.Velocity = Vector3.new(0, 0, 0)
+        flyBV.Parent = hrp
+    end
+
+    RunService.RenderStepped:Connect(function(dt)
+        if not flyEnabled then return end
+        local cam = workspace.CurrentCamera
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+
+        if not flyBV or not flyBV.Parent then startFly() end
+
+        local move = hum and hum.MoveDirection or Vector3.new(0, 0, 0)
+        local camLook = cam.CFrame.LookVector
+        local camRight = cam.CFrame.RightVector
+        local camForwardFlat = Vector3.new(camLook.X, 0, camLook.Z)
+        if camForwardFlat.Magnitude > 0.01 then camForwardFlat = camForwardFlat.Unit end
+
+        local rightInput = move:Dot(camRight)
+        local forwardInput = move:Dot(camForwardFlat)
+        local targetVel = camLook * forwardInput + camRight * rightInput
+        
+        if targetVel.Magnitude > 0.01 then
+            targetVel = targetVel.Unit * flySpeed
+        else
+            targetVel = Vector3.new(0, 0, 0)
+        end
+
+        currentVel = currentVel:Lerp(targetVel, math.clamp(dt * 8, 0, 1))
+        flyBV.Velocity = currentVel
+    end)
+
+    -- ESP
+    local function clearESP(plr)
+        if espObjects[plr] then
+            for _, obj in pairs(espObjects[plr]) do if obj then obj:Destroy() end end
+            espObjects[plr] = nil
+        end
+        if tracerLines[plr] then
+            pcall(function() tracerLines[plr]:Remove() end)
+            tracerLines[plr] = nil
+        end
+    end
+
+    local function createESP(plr)
+        clearESP(plr)
+        espObjects[plr] = {}
+        local char = plr.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+
+        if espBoxEnabled then
+            local box = Instance.new("BoxHandleAdornment")
+            box.Name = "ChaosBox"
+            box.Size = Vector3.new(3, 5.4, 3)
+            box.Adornee = hrp
+            box.AlwaysOnTop = true
+            box.ZIndex = 5
+            box.Transparency = 0.5
+            box.Color3 = Color3.fromRGB(255, 0, 0)
+            box.Parent = hrp
+            table.insert(espObjects[plr], box)
+        end
+    end
+
+    local function refreshAllESP()
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer then createESP(plr) end
+        end
+    end
+
+    RunService.RenderStepped:Connect(function()
+        if not espTracerEnabled then return end
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer then
+                if Drawing then
+                    if not tracerLines[plr] then
+                        local line = Drawing.new("Line")
+                        line.Thickness = 2
+                        line.Color = Color3.fromRGB(255, 255, 0)
+                        line.Transparency = 1
+                        line.Visible = false
+                        tracerLines[plr] = line
+                    end
+                    local line = tracerLines[plr]
+                    local char = plr.Character
+                    if char and char:FindFirstChild("HumanoidRootPart") then
+                        local cam = workspace.CurrentCamera
+                        local pos, onScreen = cam:WorldToViewportPoint(char.HumanoidRootPart.Position)
+                        if onScreen then
+                            line.From = Vector2.new(cam.ViewportSize.X / 2, cam.ViewportSize.Y)
+                            line.To = Vector2.new(pos.X, pos.Y)
+                            line.Visible = true
+                        else
+                            line.Visible = false
+                        end
+                    else
+                        line.Visible = false
+                    end
+                end
+            end
+        end
+    end)
+
+    Players.PlayerAdded:Connect(function(plr) task.wait(1); createESP(plr) end)
+    Players.PlayerRemoving:Connect(function(plr) clearESP(plr) end)
+
+    -- ПОДБРОС
+    local function launchAll()
+        local count = 0
+        for _, plr in pairs(Players:GetPlayers()) do
+            if plr ~= LocalPlayer and plr.Character then
+                local char = plr.Character
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    local newPos = Vector3.new(hrp.Position.X, LAUNCH_HEIGHT, hrp.Position.Z)
+                    pcall(function() char:PivotTo(CFrame.new(newPos)) end)
+                    pcall(function() hrp.CFrame = CFrame.new(newPos) end)
+                    pcall(function() hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0) end)
+                    count = count + 1
+                end
+            end
+        end
+        return count
+    end
+
+    -- ИНТЕРФЕЙС
+    C_MainTab:CreateSection("Активация хаоса")
+
+    C_MainTab:CreateButton({
+        Name = "💥 CHAOS MODE — ВКЛЮЧИТЬ ВСЁ",
+        Callback = function()
+            flyEnabled = true
+            startFly()
+            espBoxEnabled = true
+            refreshAllESP()
+            espTracerEnabled = true
+            local n = launchAll()
+            Rayfield:Notify({
+                Title = "💥 CHAOS MODE",
+                Content = "Полёт 200 + ESP + " .. n .. " игроков на 1 триллион!",
+                Duration = 4
+            })
+        end
+    })
+
+    C_MainTab:CreateButton({
+        Name = "🛑 Остановить хаос",
+        Callback = function()
+            flyEnabled = false
+            cleanupFly()
+            espBoxEnabled = false
+            espTracerEnabled = false
+            for _, plr in pairs(Players:GetPlayers()) do
+                clearESP(plr)
+            end
+            Rayfield:Notify({ Title = "Chaos", Content = "Остановлено", Duration = 2 })
+        end
+    })
+
+    -- ТЕСТ НА СЕБЕ
+    C_MainTab:CreateSection("Тест на себе")
+
+    C_MainTab:CreateButton({
+        Name = "🧪 Подбросить СЕБЯ на 1 триллион",
+        Callback = function()
+            local char = LocalPlayer.Character
+            if not char then return end
+            local hrp = char:FindFirstChild("HumanoidRootPart")
+            if not hrp then return end
+            local newPos = Vector3.new(hrp.Position.X, LAUNCH_HEIGHT, hrp.Position.Z)
+            pcall(function() char:PivotTo(CFrame.new(newPos)) end)
+            pcall(function() hrp.CFrame = CFrame.new(newPos) end)
+            pcall(function() hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0) end)
+            Rayfield:Notify({ Title = "🧪 Тест", Content = "Ты отправлен на 1 триллион!", Duration = 3 })
+        end
+    })
+
+    C_MainTab:CreateButton({
+        Name = "🧪 CHAOS на СЕБЕ (полёт + подброс)",
+        Callback = function()
+            flyEnabled = true
+            startFly()
+            local char = LocalPlayer.Character
+            if char then
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    local newPos = Vector3.new(hrp.Position.X, LAUNCH_HEIGHT, hrp.Position.Z)
+                    pcall(function() char:PivotTo(CFrame.new(newPos)) end)
+                    pcall(function() hrp.CFrame = CFrame.new(newPos) end)
+                    pcall(function() hrp.AssemblyLinearVelocity = Vector3.new(0, 0, 0) end)
+                end
+            end
+            Rayfield:Notify({ Title = "🧪 CHAOS на себе", Content = "Полёт + подброс себя!", Duration = 3 })
+        end
+    })
+
+    LocalPlayer.CharacterAdded:Connect(function()
+        task.wait(0.5)
+        if flyEnabled then startFly() end
+    end)
+end
+-- ============================================
+-- WEBSHUB ALL-IN-ONE
+-- Часть 5: A Long Flight (v6)
+-- ============================================
+
+_G.StartFlight = function()
+    FlightWindow = Rayfield:CreateWindow({
+        Name = "A Long Flight",
+        LoadingTitle = "Загрузка A Long Flight...",
+        LoadingSubtitle = "by Webs_My",
+        ConfigurationSaving = { Enabled = false }
+    })
+
+    local F_MainTab = FlightWindow:CreateTab("Главная", 4483362458)
+    local F_CombatTab = FlightWindow:CreateTab("Аим / Бой", 4483362458)
+    local F_UtilTab = FlightWindow:CreateTab("Утилиты / ТП", 4483362458)
+
+    -- GOD MODE
+    F_MainTab:CreateSection("Защита")
+    local godModeEnabled = false
+    F_MainTab:CreateToggle({ Name = "🛡️ God Mode (Восстановление HP)", CurrentValue = false,
+        Callback = function(state) godModeEnabled = state end })
+
+    RunService.Heartbeat:Connect(function()
+        if godModeEnabled then
+            local char = LocalPlayer.Character
+            if char then
+                local hum = char:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health < hum.MaxHealth then
+                    hum.Health = hum.MaxHealth
+                end
+            end
+        end
+    end)
+
+    -- FLY
+    F_MainTab:CreateSection("Полёт")
+    local flyEnabled = false
+    local flySpeed = 50
+    local flyBV = nil
+
+    F_MainTab:CreateSlider({ Name = "Скорость полёта", Range = {50, 500}, Increment = 10, CurrentValue = 50,
+        Callback = function(v) flySpeed = v end })
+
+    F_MainTab:CreateToggle({ Name = "Включить полёт", CurrentValue = false, Callback = function(state)
+        flyEnabled = state
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+        if state then
+            flyBV = Instance.new("BodyVelocity")
+            flyBV.Name = "FlyBV"
+            flyBV.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+            flyBV.Velocity = Vector3.new(0, 0, 0)
+            flyBV.Parent = hrp
+        else
+            if flyBV then flyBV:Destroy() flyBV = nil end
+            local bv = hrp:FindFirstChild("FlyBV")
+            if bv then bv:Destroy() end
+        end
+    end })
+
+    RunService.RenderStepped:Connect(function()
+        if not flyEnabled then return end
+        local char = LocalPlayer.Character
+        local cam = workspace.CurrentCamera
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        local hum = char:FindFirstChildOfClass("Humanoid")
+        if not hrp or not hum then return end
+        if not flyBV or not flyBV.Parent then
+            flyBV = Instance.new("BodyVelocity")
+            flyBV.Name = "FlyBV"
+            flyBV.MaxForce = Vector3.new(1e6, 1e6, 1e6)
+            flyBV.Parent = hrp
+        end
+        local move = hum.MoveDirection
+        local camLook = cam.CFrame.LookVector
+        flyBV.Velocity = camLook * move.Z * flySpeed + cam.CFrame.RightVector * move.X * flySpeed
+    end)
+
+    -- ВАКУУМ
+    F_MainTab:CreateSection("Вакуум")
+    local vacuumEnabled = false
+    local vacuumRadius = 50
+
+    F_MainTab:CreateSlider({ Name = "Радиус (до 1кк)", Range = {10, 1000000}, Increment = 100, CurrentValue = 50,
+        Callback = function(v) vacuumRadius = v end })
+
+    F_MainTab:CreateToggle({ Name = "Притягивать предметы", CurrentValue = false,
+        Callback = function(state) vacuumEnabled = state end })
+
+    RunService.Heartbeat:Connect(function()
+        if not vacuumEnabled then return end
+        local char = LocalPlayer.Character
+        if not char then return end
+        local hrp = char:FindFirstChild("HumanoidRootPart")
+        if not hrp then return end
+
+        for _, item in pairs(Workspace:GetDescendants()) do
+            if (item:IsA("BasePart") or item:IsA("Model")) and item.Name ~= "Terrain" and item.Parent ~= char then
+                local part = item:IsA("BasePart") and item or item:FindFirstChildWhichIsA("BasePart")
+                if part then
+                    local dist = (part.Position - hrp.Position).Magnitude
+                    if dist <= vacuumRadius and dist > 3 then
+                        item:RequestStreamAroundAsync(part.Position)
+                        part.CFrame = part.CFrame:Lerp(CFrame.new(hrp.Position + Vector3.new(0, 2, 0)), 0.3)
+                        part.Velocity = Vector3.new(0,0,0)
+                    end
+                end
+            end
+        end
+    end)
+
+    -- ТРИГГЕР-БОТ
+    F_CombatTab:CreateSection("Триггер Бот")
+    local triggerEnabled = false
+    local triggerDelay = 0.1
+    local triggerRange = 150
+
+    F_CombatTab:CreateSlider({ Name = "Задержка выстрела (сек)", Range = {0.05, 1}, Increment = 0.05, CurrentValue = 0.1,
+        Callback = function(v) triggerDelay = v end })
+
+    F_CombatTab:CreateToggle({ Name = "🔫 Включить Триггер (Авто-стрельба)", CurrentValue = false,
+        Callback = function(state)
+            triggerEnabled = state
+            if state then
+                Rayfield:Notify({ Title = "Триггер", Content = "Включен! Наводись на зомби.", Duration = 3 })
+            end
+        end })
+
+    local function checkCrosshair()
+        local cam = workspace.CurrentCamera
+        local rayOrigin = cam.CFrame.Position
+        local rayDirection = cam.CFrame.LookVector * triggerRange
+
+        local rayParams = RaycastParams.new()
+        rayParams.FilterType = Enum.RaycastFilterType.Exclude
+        rayParams.FilterDescendantsInstances = {LocalPlayer.Character}
+
+        local result = workspace:Raycast(rayOrigin, rayDirection, rayParams)
+        if result and result.Instance then
+            local parentModel = result.Instance:FindFirstAncestorOfClass("Model")
+            if parentModel then
+                local hum = parentModel:FindFirstChildOfClass("Humanoid")
+                if hum and hum.Health > 0 and not Players:GetPlayerFromCharacter(parentModel) then
+                    return true
+                end
+            end
+        end
+        return false
+    end
+
+    local isShooting = false
+    RunService.RenderStepped:Connect(function()
+        if not triggerEnabled or isShooting then return end
+        if checkCrosshair() then
+            isShooting = true
+            local char = LocalPlayer.Character
+            if char then
+                local tool = char:FindFirstChildWhichIsA("Tool")
+                if tool then tool:Activate() end
+            end
+            task.wait(triggerDelay)
+            isShooting = false
+        end
+    end)
+
+    -- ТП ПО КООРДИНАТАМ
+    F_UtilTab:CreateSection("Телепорт по координатам")
+    local tpX, tpY, tpZ = 0, 0, 0
+
+    F_UtilTab:CreateInput({ Name = "Координата X", PlaceholderText = "0", RemoveTextAfterFocusLost = false, Callback = function(t) tpX = tonumber(t) or 0 end })
+    F_UtilTab:CreateInput({ Name = "Координата Y", PlaceholderText = "50", RemoveTextAfterFocusLost = false, Callback = function(t) tpY = tonumber(t) or 0 end })
+    F_UtilTab:CreateInput({ Name = "Координата Z", PlaceholderText = "0", RemoveTextAfterFocusLost = false, Callback = function(t) tpZ = tonumber(t) or 0 end })
+
+    F_UtilTab:CreateButton({ Name = "Телепортироваться", Callback = function()
+        local char = LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(tpX, tpY, tpZ))
+            Rayfield:Notify({ Title = "ТП", Content = "Телепорт на "..tpX..", "..tpY..", "..tpZ, Duration = 3 })
+        end
+    end })
+    
+    -- FPS BOOST
+    F_UtilTab:CreateSection("Буст ФПС (Графика)")
+    local fpsBoostEnabled = false
+    local originalLighting = {
+        Brightness = Lighting.Brightness,
+        ClockTime = Lighting.ClockTime,
+        FogEnd = Lighting.FogEnd,
+        FogStart = Lighting.FogStart,
+    }
+
+    F_UtilTab:CreateToggle({ Name = "Включить FPS Boost", CurrentValue = false, Callback = function(state)
+        fpsBoostEnabled = state
+        if state then
+            Lighting.Brightness = 2
+            Lighting.ClockTime = 14
+            Lighting.FogEnd = 100000
+            Lighting.FogStart = 100000
+            Lighting.GlobalShadows = false
+            for _, obj in pairs(Lighting:GetChildren()) do
+                if obj:IsA("BlurEffect") or obj:IsA("BloomEffect") or obj:IsA("SunRaysEffect") or obj:IsA("ColorCorrectionEffect") then
+                    obj.Enabled = false
+                end
+            end
+        else
+            Lighting.Brightness = originalLighting.Brightness
+            Lighting.ClockTime = originalLighting.ClockTime
+            Lighting.FogEnd = originalLighting.FogEnd
+            Lighting.FogStart = originalLighting.FogStart
+            Lighting.GlobalShadows = true
+        end
+    end })
+end
